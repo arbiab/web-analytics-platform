@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f1117;
+      --surface:   #1a1d27;
+      --border:    #2a2d3a;
+      --accent:    #6c63ff;
+      --accent2:   #00d4aa;
+      --text:      #e8eaf0;
+      --muted:     #7b7f96;
+      --radius:    12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    header span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .card--revenue::before  { background: var(--accent); }
+    .card--inventory::before { background: var(--accent2); }
+
+    .card-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 240px;
+    }
+
+    .status {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-align: center;
+      padding: 60px 0;
+    }
+
+    .status.error { color: #ff6b6b; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Analytics Dashboard</h1>
+    <span>Web Analytics Platform</span>
+  </header>
+
+  <div class="grid">
+
+    <!-- Revenue Growth -->
+    <div class="card card--revenue">
+      <div class="card-label">KPI 01</div>
+      <div class="card-title">Revenue Growth</div>
+      <div class="chart-wrap">
+        <canvas id="revenueGrowthChart"></canvas>
+        <p class="status" id="revenueStatus">Duke ngarkuar të dhënat…</p>
+      </div>
+    </div>
+
+    <!-- Inventory Turnover -->
+    <div class="card card--inventory">
+      <div class="card-label">KPI 02</div>
+      <div class="card-title">Inventory Turnover</div>
+      <div class="chart-wrap">
+        <canvas id="inventoryTurnoverChart"></canvas>
+        <p class="status" id="inventoryStatus">Duke ngarkuar të dhënat…</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
