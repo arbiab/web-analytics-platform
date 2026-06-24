@@ -4,13 +4,552 @@
   padding: 0;
 }
 
-body {
-  background: #0f1117;
-  color: #e8eaf0;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+/* ── CSS Variables (Dark mode default) ────────────────────────────────── */
+:root {
+  --bg:      #0f1117;
+  --surface: #1a1d27;
+  --border:  #2a2d3a;
+  --text:    #e8eaf0;
+  --muted:   #7b7f96;
+  --input:   #0f1117;
+  --shadow:  rgba(0,0,0,0.4);
 }
 
-input:focus {
+:root.light {
+  --bg:      #f4f6fb;
+  --surface: #ffffff;
+  --border:  #e2e6f0;
+  --text:    #1a1d2e;
+  --muted:   #6b7280;
+  --input:   #f8f9fc;
+  --shadow:  rgba(0,0,0,0.08);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+input, select, textarea {
+  background: var(--input) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+input:focus, select:focus, textarea:focus {
   border-color: #6c63ff !important;
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15) !important;
+}
+
+/* ── Animations ────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInFast {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.fade-in      { animation: fadeIn 0.4s ease forwards; }
+.fade-in-fast { animation: fadeInFast 0.3s ease forwards; }
+
+.fade-in-children > * {
+  opacity: 0;
+  animation: fadeIn 0.4s ease forwards;
+}
+.fade-in-children > *:nth-child(1) { animation-delay: 0.05s; }
+.fade-in-children > *:nth-child(2) { animation-delay: 0.10s; }
+.fade-in-children > *:nth-child(3) { animation-delay: 0.15s; }
+.fade-in-children > *:nth-child(4) { animation-delay: 0.20s; }
+.fade-in-children > *:nth-child(5) { animation-delay: 0.25s; }
+.fade-in-children > *:nth-child(6) { animation-delay: 0.30s; }
+
+/* ── Skeleton loading ──────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 6px;
+}
+
+.skeleton-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.skeleton-line  { height: 12px; margin-bottom: 10px; border-radius: 4px; }
+.skeleton-title { height: 16px; width: 60%; margin-bottom: 14px; border-radius: 4px; }
+.skeleton-chart { height: 180px; border-radius: 8px; }
+.skeleton-kpi   { height: 48px; width: 70%; margin-top: 8px; border-radius: 6px; }
+
+/* ── Theme-aware components ────────────────────────────────────────────── */
+.themed-page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.themed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--surface);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.themed-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.themed-kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid;
+  border-radius: 12px;
+  padding: 20px;
+  transition: background 0.3s ease;
+}
+
+.themed-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.text-muted { color: var(--muted); }
+.text-main  { color: var(--text); }
+
+/* ── Theme-aware all surfaces ──────────────────────────────────────────── */
+:root.light .themed-page,
+:root.light [style*="background: #0f1117"],
+:root.light [style*="background: rgb(15, 17, 23)"] {
+  background: var(--bg) !important;
+}
+
+:root.light [style*="background: #1a1d27"],
+:root.light [style*="background: rgb(26, 29, 39)"] {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+:root.light [style*="border: 1px solid #2a2d3a"],
+:root.light [style*="border-bottom: 1px solid #2a2d3a"],
+:root.light [style*="borderBottom: '1px solid #2a2d3a'"] {
+  border-color: var(--border) !important;
+}
+
+:root.light [style*="color: #e8eaf0"],
+:root.light [style*="color: rgb(232, 234, 240)"] {
+  color: var(--text) !important;
+}
+
+:root.light [style*="color: #7b7f96"],
+:root.light [style*="color: rgb(123, 127, 150)"] {
+  color: var(--muted) !important;
+}
+
+/* Buttons in light mode */
+:root.light button[style*="#2a2d3a"] {
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* ── Hover effects ─────────────────────────────────────────────────────── */
+.themed-card {
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.themed-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--shadow);
+  border-color: #6c63ff !important;
+}
+
+.themed-kpi-card {
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.themed-kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+/* Nav buttons hover */
+.nav-btn {
+  transition: all 0.2s ease !important;
+}
+
+.nav-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+/* Header links hover */
+a[style*="textDecoration: 'none'"],
+a[style*="text-decoration: none"] {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+a[style*="textDecoration: 'none'"]:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+/* Logout/refresh button hover */
+button:not([disabled]):hover {
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+/* ── Light mode specific fixes ─────────────────────────────────────────── */
+:root.light .themed-header {
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+:root.light .themed-page {
+  background: var(--bg);
+}
+
+/* ── Fix hover scroll overflow ─────────────────────────────────────────── */
+.themed-card {
+  overflow: hidden;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* ── Button hover effects ──────────────────────────────────────────────── */
+button:not([disabled]) {
+  transition: all 0.2s ease !important;
+  cursor: pointer;
+}
+
+button:not([disabled]):hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+  opacity: 1 !important;
+}
+
+button:not([disabled]):active {
+  transform: translateY(0px) !important;
+}
+
+/* Primary purple buttons */
+button[style*="background: #6c63ff"]:hover,
+button[style*="background: rgb(108, 99, 255)"]:hover {
+  background: #7c74ff !important;
+  box-shadow: 0 4px 16px rgba(108,99,255,0.4) !important;
+}
+
+/* Yellow forecast button */
+button[style*="background: #f59e0b"]:hover,
+button[style*="background: rgb(245, 158, 11)"]:hover {
+  background: #f6a820 !important;
+  box-shadow: 0 4px 16px rgba(245,158,11,0.4) !important;
+}
+
+/* Green teal buttons */
+button[style*="background: #00d4aa"]:hover {
+  background: #00e5b8 !important;
+  box-shadow: 0 4px 16px rgba(0,212,170,0.4) !important;
+}
+
+/* Transparent/outline buttons */
+button[style*="background: transparent"]:hover {
+  background: rgba(108,99,255,0.1) !important;
+  border-color: #6c63ff !important;
+  color: #6c63ff !important;
+}
+
+/* Nav link buttons hover */
+a.nav-link {
+  transition: all 0.2s ease;
+}
+
+a[style*="textDecoration: 'none'"]:hover,
+a[href]:not([style*="color: #ff6b6b"]):hover {
+  transform: translateY(-1px);
+  opacity: 0.85;
+}
+
+/* Delete/danger buttons */
+button[style*="color: #ff6b6b"]:hover {
+  background: rgba(255,107,107,0.15) !important;
+  box-shadow: 0 4px 12px rgba(255,107,107,0.3) !important;
+}
+
+/* Filter buttons */
+button[style*="borderRadius: '20px'"]:hover {
+  border-color: #6c63ff !important;
+  color: #6c63ff !important;
+}
+
+/* ── Button Fill Effect ────────────────────────────────────────────────── */
+button:not([disabled]) {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease !important;
+}
+
+/* Fill layer — slides up from bottom on hover */
+button:not([disabled])::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: rgba(255, 255, 255, 0.12);
+  transition: height 0.3s ease;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+button:not([disabled]):hover::after {
+  height: 100%;
+}
+
+button:not([disabled]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25) !important;
+}
+
+button:not([disabled]):active {
+  transform: translateY(0px);
+}
+
+button:not([disabled]) > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Purple primary buttons */
+button[style*="background: #6c63ff"]:hover {
+  box-shadow: 0 6px 20px rgba(108,99,255,0.45) !important;
+}
+
+/* Yellow forecast button */
+button[style*="background: #f59e0b"]:hover {
+  box-shadow: 0 6px 20px rgba(245,158,11,0.45) !important;
+}
+
+/* Teal/green buttons */
+button[style*="background: #00d4aa"]:hover {
+  box-shadow: 0 6px 20px rgba(0,212,170,0.45) !important;
+}
+
+/* Outline/transparent buttons — fill with accent color */
+button[style*="background: transparent"]::after,
+button[style*="background: 'transparent'"]::after {
+  background: rgba(108, 99, 255, 0.1);
+}
+
+button[style*="background: transparent"]:hover {
+  border-color: #6c63ff !important;
+  color: #6c63ff !important;
+  box-shadow: 0 4px 12px rgba(108,99,255,0.2) !important;
+}
+
+/* Delete buttons */
+button[style*="color: #ff6b6b"]::after {
+  background: rgba(255, 107, 107, 0.1);
+}
+
+button[style*="color: #ff6b6b"]:hover {
+  box-shadow: 0 4px 12px rgba(255,107,107,0.3) !important;
+  border-color: #ff6b6b !important;
+}
+
+/* ── Dashboard Card Hover - both themes ───────────────────────────────── */
+.themed-card {
+  transition: background 0.3s ease, border-color 0.3s ease, 
+              transform 0.25s ease, box-shadow 0.25s ease !important;
+  overflow: hidden;
+}
+
+/* Dark mode hover */
+.themed-card:hover {
+  transform: translateY(-3px);
+  border-color: #6c63ff !important;
+  box-shadow: 0 8px 28px rgba(108,99,255,0.2), 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+
+/* Light mode hover */
+:root.light .themed-card:hover {
+  transform: translateY(-3px);
+  border-color: #6c63ff !important;
+  box-shadow: 0 8px 28px rgba(108,99,255,0.15), 0 2px 12px rgba(0,0,0,0.08) !important;
+}
+
+/* KPI cards hover */
+.themed-kpi-card {
+  transition: background 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease !important;
+  cursor: default;
+}
+
+.themed-kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25) !important;
+}
+
+:root.light .themed-kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+}
+
+/* Header nav links hover */
+.themed-header a {
+  transition: all 0.2s ease;
+}
+
+.themed-header a:hover {
+  transform: translateY(-1px);
+  opacity: 0.85;
+  filter: brightness(1.1);
+}
+
+:root.light .themed-header a:hover {
+  filter: brightness(0.9);
+}
+
+/* ── Navbar button hover (nav-btn class) ──────────────────────────────── */
+.nav-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease !important;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: rgba(255,255,255,0.1);
+  transition: height 0.25s ease;
+  border-radius: inherit;
+  z-index: 0;
+}
+
+.nav-btn:hover::after {
+  height: 100%;
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2) !important;
+  filter: brightness(1.1);
+}
+
+.nav-btn:active {
+  transform: translateY(0px) !important;
+}
+
+/* Light mode nav-btn */
+:root.light .nav-btn:hover {
+  filter: brightness(0.95);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1) !important;
+}
+
+/* Colored nav buttons glow */
+.nav-btn[style*="color: #6c63ff"]:hover {
+  box-shadow: 0 4px 14px rgba(108,99,255,0.35) !important;
+}
+.nav-btn[style*="color: #00d4aa"]:hover {
+  box-shadow: 0 4px 14px rgba(0,212,170,0.35) !important;
+}
+.nav-btn[style*="color: #f59e0b"]:hover {
+  box-shadow: 0 4px 14px rgba(245,158,11,0.35) !important;
+}
+.nav-btn[style*="color: #ec4899"]:hover {
+  box-shadow: 0 4px 14px rgba(236,72,153,0.35) !important;
+}
+
+/* ── Responsive Navbar ─────────────────────────────────────────────────── */
+.nav-desktop { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.nav-mobile-btn { display: none; }
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0; right: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  z-index: 1000;
+  padding: 24px 16px;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.3);
+  animation: slideIn 0.25s ease;
+}
+
+.mobile-menu.open { display: flex; }
+
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+.mobile-overlay.open { display: block; }
+
+.mobile-menu a,
+.mobile-menu button {
+  width: 100% !important;
+  text-align: left !important;
+  padding: 12px 16px !important;
+  border-radius: 10px !important;
+  font-size: 0.95rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@media (max-width: 900px) {
+  .nav-desktop    { display: none !important; }
+  .nav-mobile-btn { display: flex !important; align-items: center; }
 }

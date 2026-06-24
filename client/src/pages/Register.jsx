@@ -108,19 +108,19 @@ export default function Register() {
 }
 
 const styles = {
-  page:         { minHeight: '100vh', background: '#0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: "'Segoe UI', system-ui, sans-serif" },
-  card:         { background: '#1a1d27', border: '1px solid #2a2d3a', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '500px' },
+  page:         { minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: "'Segoe UI', system-ui, sans-serif" },
+  card:         { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '40px', width: '100%', maxWidth: '500px' },
   logo:         { fontSize: '2.5rem', textAlign: 'center', marginBottom: '12px' },
-  title:        { color: '#e8eaf0', fontSize: '1.4rem', fontWeight: 700, margin: '0 0 6px', textAlign: 'center' },
-  subtitle:     { color: '#7b7f96', fontSize: '0.88rem', margin: '0 0 28px', textAlign: 'center' },
+  title:        { color: 'var(--text)', fontSize: '1.4rem', fontWeight: 700, margin: '0 0 6px', textAlign: 'center' },
+  subtitle:     { color: 'var(--muted)', fontSize: '0.88rem', margin: '0 0 28px', textAlign: 'center' },
   sectionLabel: { color: '#6c63ff', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 14px', fontWeight: 600 },
   form:         {},
   field:        { marginBottom: '14px' },
   row:          { display: 'flex', gap: '12px' },
-  label:        { display: 'block', color: '#7b7f96', fontSize: '0.78rem', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.06em' },
-  input:        { width: '100%', padding: '10px 14px', background: '#0f1117', border: '1px solid #2a2d3a', borderRadius: '8px', color: '#e8eaf0', fontSize: '0.92rem', outline: 'none', boxSizing: 'border-box' },
+  label:        { display: 'block', color: 'var(--muted)', fontSize: '0.78rem', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.06em' },
+  input:        { width: '100%', padding: '10px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.92rem', outline: 'none', boxSizing: 'border-box' },
   error:        { color: '#ff6b6b', fontSize: '0.85rem', margin: '0 0 12px', textAlign: 'center' },
   btn:          { width: '100%', padding: '12px', background: '#6c63ff', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', marginTop: '8px' },
-  footer:       { color: '#7b7f96', fontSize: '0.85rem', textAlign: 'center', marginTop: '20px' },
+  footer:       { color: 'var(--muted)', fontSize: '0.85rem', textAlign: 'center', marginTop: '20px' },
   link:         { color: '#6c63ff', textDecoration: 'none', fontWeight: 600 },
 }

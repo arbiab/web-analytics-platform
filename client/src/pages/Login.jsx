@@ -63,17 +63,17 @@ export default function Login() {
 }
 
 const styles = {
-  page:     { minHeight: '100vh', background: '#0f1117', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Segoe UI', system-ui, sans-serif" },
-  card:     { background: '#1a1d27', border: '1px solid #2a2d3a', borderRadius: '16px', padding: '48px 40px', width: '100%', maxWidth: '400px', textAlign: 'center' },
+  page:     { minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Segoe UI', system-ui, sans-serif" },
+  card:     { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 40px', width: '100%', maxWidth: '400px', textAlign: 'center' },
   logo:     { fontSize: '2.5rem', marginBottom: '12px' },
-  title:    { color: '#e8eaf0', fontSize: '1.5rem', fontWeight: 700, margin: '0 0 6px' },
-  subtitle: { color: '#7b7f96', fontSize: '0.9rem', margin: '0 0 32px' },
+  title:    { color: 'var(--text)', fontSize: '1.5rem', fontWeight: 700, margin: '0 0 6px' },
+  subtitle: { color: 'var(--muted)', fontSize: '0.9rem', margin: '0 0 32px' },
   form:     { textAlign: 'left' },
   field:    { marginBottom: '18px' },
-  label:    { display: 'block', color: '#7b7f96', fontSize: '0.8rem', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' },
-  input:    { width: '100%', padding: '10px 14px', background: '#0f1117', border: '1px solid #2a2d3a', borderRadius: '8px', color: '#e8eaf0', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box' },
+  label:    { display: 'block', color: 'var(--muted)', fontSize: '0.8rem', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' },
+  input:    { width: '100%', padding: '10px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box' },
   error:    { color: '#ff6b6b', fontSize: '0.85rem', margin: '0 0 14px', textAlign: 'center' },
   btn:      { width: '100%', padding: '12px', background: '#6c63ff', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', marginTop: '4px' },
-  footer:   { color: '#7b7f96', fontSize: '0.85rem', marginTop: '24px' },
+  footer:   { color: 'var(--muted)', fontSize: '0.85rem', marginTop: '24px' },
   link:     { color: '#6c63ff', textDecoration: 'none', fontWeight: 600 },
 }

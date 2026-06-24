@@ -1,5 +1,8 @@
 import { useEffect, useState, useCallback } from 'react'
+import SkeletonDashboard from '../components/SkeletonDashboard'
+import useCountUp from '../hooks/useCountUp'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTheme } from '../context/ThemeContext'
 import axios from 'axios'
 import RevenueChart from '../components/RevenueChart'
 import InventoryChart from '../components/InventoryChart'
@@ -17,6 +20,20 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const user     = JSON.parse(localStorage.getItem('user') || '{}')
   const isAdmin  = user.role === 'Admin'
+  const { dark, toggle, t } = useTheme()
+
+  function exportCSV(data, filename) {
+    if (!data.length) return
+    const headers = Object.keys(data[0]).join(',')
+    const rows    = data.map(r => Object.values(r).join(',')).join('\n')
+    const blob    = new Blob([headers + '\n' + rows], { type: 'text/csv' })
+    const url     = URL.createObjectURL(blob)
+    const a       = document.createElement('a')
+    a.href        = url
+    a.download    = filename
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   const [revenue,        setRevenue]        = useState([])
   const [inventory,      setInventory]      = useState([])
@@ -26,6 +43,7 @@ export default function Dashboard() {
   const [loading,        setLoading]        = useState(true)
   const [error,          setError]          = useState('')
   const [lastUpdated,    setLastUpdated]    = useState(null)
+  const [menuOpen,       setMenuOpen]       = useState(false)
 
   const fetchData = useCallback(async () => {
     const api = apiClient()
@@ -90,15 +108,39 @@ export default function Dashboard() {
   const totalProducts = [...new Set(filteredInventory.map(r => r.product_name))].length
 
   return (
-    <div style={styles.page}>
+    <div className='themed-page fade-in-fast'>
 
       {/* Header */}
-      <header style={styles.header}>
+      <header className='themed-header'>
         <div>
           <h1 style={styles.title}>Analytics Dashboard</h1>
           <span style={styles.subtitle}>Web Analytics Platform</span>
         </div>
         <div style={styles.headerRight}>
+          {/* Mobile menu overlay */}
+          {menuOpen && <div className='mobile-overlay open' onClick={() => setMenuOpen(false)} />}
+
+          {/* Mobile sidebar */}
+          <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', paddingBottom: '16px', borderBottom: '1px solid var(--border)' }}>
+              <span style={{ fontWeight: 600, color: 'var(--text)' }}>Menu</span>
+              <button style={{ background: 'none', border: 'none', color: 'var(--muted)', fontSize: '1.2rem', cursor: 'pointer' }} onClick={() => setMenuOpen(false)}>✕</button>
+            </div>
+            {isAdmin && (<Link to='/users' style={styles.usersBtn} className='nav-btn' onClick={() => setMenuOpen(false)}>👥 Punonjësit</Link>)}
+            {isAdmin && (<Link to='/import' style={styles.importBtn2} className='nav-btn' onClick={() => setMenuOpen(false)}>📂 Importo</Link>)}
+            <Link to='/kpis' style={styles.kpisBtn} className='nav-btn' onClick={() => setMenuOpen(false)}>📊 KPIs</Link>
+            <Link to='/logs' style={styles.logsBtn} className='nav-btn' onClick={() => setMenuOpen(false)}>📋 Logs</Link>
+            <Link to='/model-runs' style={styles.runsBtn} className='nav-btn' onClick={() => setMenuOpen(false)}>🤖 ML Runs</Link>
+            <Link to='/settings' style={styles.settingsBtn} className='nav-btn' onClick={() => setMenuOpen(false)}>⚙️ Cilësimet</Link>
+            <button style={styles.themeBtn} className='nav-btn' onClick={() => { toggle(); setMenuOpen(false) }}>{dark ? '☀️ Light Mode' : '🌙 Dark Mode'}</button>
+            <button style={styles.exportBtn} className='nav-btn' onClick={() => { exportCSV(filteredRevenue, 'revenue.csv'); setMenuOpen(false) }}>⬇ Eksporto CSV</button>
+            <button style={styles.logoutBtn} className='nav-btn' onClick={handleLogout}>🚪 Dil</button>
+          </div>
+          {/* Hamburger button for mobile */}
+          <button className='nav-mobile-btn nav-btn' style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: '8px', padding: '8px 12px', color: 'var(--text)', fontSize: '1.1rem' }} onClick={() => setMenuOpen(true)}>☰</button>
+
+          {/* Desktop nav */}
+          <div className='nav-desktop'>
           {/* Auto-refresh indicator */}
           {lastUpdated && (
             <span style={styles.refreshBadge}>
@@ -109,17 +151,17 @@ export default function Dashboard() {
             {isAdmin ? '👑 Admin' : '👤 User'}
           </span>
           <span style={styles.userText}>{user.username}</span>
-          {isAdmin && (<Link to="/users" style={styles.usersBtn}>👥 Punonjësit</Link>)}{isAdmin && (<Link to="/import" style={styles.importBtn2}>📂 Importo</Link>)}<Link to="/settings" style={styles.settingsBtn}>⚙️ Cilësimet</Link><button style={styles.refreshBtn} onClick={fetchData}>↻</button>
-          <button style={styles.logoutBtn} onClick={handleLogout}>Dil</button>
+          {isAdmin && (<Link to="/users" style={styles.usersBtn} className="nav-btn">👥 Punonjësit</Link>)}{isAdmin && (<Link to="/import" style={styles.importBtn2} className="nav-btn">📂 Importo</Link>)}<Link to="/kpis" style={styles.kpisBtn} className="nav-btn">📊 KPIs</Link><Link to="/logs" style={styles.logsBtn} className="nav-btn">📋 Logs</Link><Link to="/model-runs" style={styles.runsBtn} className="nav-btn">🤖 ML Runs</Link><Link to="/settings" style={styles.settingsBtn} className="nav-btn">⚙️ Cilësimet</Link><button style={styles.themeBtn} className="nav-btn" onClick={toggle}>{dark ? '☀️' : '🌙'}</button><button style={styles.exportBtn} className="nav-btn" onClick={() => exportCSV(filteredRevenue, 'revenue.csv')}>⬇ CSV</button><button style={styles.refreshBtn} className="nav-btn" onClick={fetchData}>↻</button>
+          <button style={styles.logoutBtn} className="nav-btn" onClick={handleLogout}>Dil</button>
+          </div> {/* end nav-desktop */}
         </div>
       </header>
 
       <main style={styles.main}>
-        {loading && <p style={styles.status}>Duke ngarkuar të dhënat...</p>}
+        {loading && <SkeletonDashboard />}
         {error   && <p style={{ ...styles.status, color: '#ff6b6b' }}>{error}</p>}
 
-        {!loading && !error && (
-          <>
+        {!loading && !error && (<div className='fade-in'>
             {/* Filter bar — vetëm Admin mund të filtrojë */}
             {isAdmin && (
               <div style={styles.filterBar}>
@@ -161,13 +203,13 @@ export default function Dashboard() {
 
             {/* Charts */}
             <div style={styles.grid}>
-              <div style={styles.card}>
+              <div className='themed-card'>
                 <p style={styles.cardLabel}>KPI 01</p>
                 <p style={styles.cardTitle}>Revenue Growth</p>
                 <RevenueChart data={filteredRevenue} />
               </div>
 
-              <div style={styles.card}>
+              <div className='themed-card'>
                 <p style={styles.cardLabel}>KPI 02</p>
                 <p style={styles.cardTitle}>Inventory Turnover</p>
                 <InventoryChart data={filteredInventory} />
@@ -177,24 +219,36 @@ export default function Dashboard() {
               <ForecastPanel onForecastDone={fetchData} />
             </div>
 
-            <div style={{ ...styles.card, gridColumn: '1 / -1' }}>
+            <div className='themed-card' style={{ gridColumn: '1 / -1' }}>
                 <p style={styles.cardLabel}>KPI 03</p>
                 <p style={styles.cardTitle}>Forecasts</p>
                 <ForecastChart data={filteredForecasts} />
               </div>
             </div>
-          </>
-        )}
+        </div>)}
       </main>
     </div>
   )
 }
 
 function KpiCard({ label, value, color }) {
+  // Extract numeric part for counter animation
+  const numMatch = String(value).match(/[\d,\.]+/)
+  const numStr   = numMatch ? numMatch[0].replace(/,/g, '') : null
+  const numVal   = numStr ? parseFloat(numStr) : null
+  const counted  = useCountUp(numVal, 1000)
+
+  // Format the animated value to match original format
+  function formatValue() {
+    if (numVal === null) return value
+    const prefix = String(value).startsWith('$') ? '$' : ''
+    return prefix + Math.round(counted).toLocaleString()
+  }
+
   return (
-    <div style={{ ...styles.kpiCard, borderTopColor: color }}>
+    <div className='themed-kpi-card fade-in' style={{ borderTopColor: color }}>
       <p style={styles.kpiLabel}>{label}</p>
-      <p style={{ ...styles.kpiValue, color }}>{value}</p>
+      <p style={{ ...styles.kpiValue, color }}>{formatValue()}</p>
     </div>
   )
 }
@@ -215,10 +269,15 @@ const styles = {
   userText:    { color: '#7b7f96', fontSize: '0.9rem' },
   refreshBtn:  { padding: '6px 12px', background: 'transparent', border: '1px solid #2a2d3a', borderRadius: '8px', color: '#7b7f96', cursor: 'pointer', fontSize: '1rem' },
   importBtn2: { padding: '8px 16px', background: 'rgba(0,212,170,0.12)', border: '1px solid #00d4aa', borderRadius: '8px', color: '#00d4aa', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 },
+  kpisBtn:     { padding: '8px 16px', background: 'rgba(245,158,11,0.12)', border: '1px solid #f59e0b', borderRadius: '8px', color: '#f59e0b', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 },
+  themeBtn:    { padding: '8px 12px', background: 'transparent', border: '1px solid #2a2d3a', borderRadius: '8px', cursor: 'pointer', fontSize: '1rem' },
+  exportBtn:   { padding: '8px 14px', background: 'transparent', border: '1px solid #00d4aa', borderRadius: '8px', color: '#00d4aa', cursor: 'pointer', fontSize: '0.85rem' },
+  logsBtn:     { padding: '8px 16px', background: 'transparent', border: '1px solid #2a2d3a', borderRadius: '8px', color: '#7b7f96', textDecoration: 'none', fontSize: '0.85rem' },
+  runsBtn:     { padding: '8px 16px', background: 'rgba(236,72,153,0.12)', border: '1px solid #ec4899', borderRadius: '8px', color: '#ec4899', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 },
   settingsBtn: { padding: '8px 16px', background: 'transparent', border: '1px solid #2a2d3a', borderRadius: '8px', color: '#7b7f96', textDecoration: 'none', fontSize: '0.85rem' },
   usersBtn:    { padding: '8px 16px', background: 'rgba(108,99,255,0.15)', border: '1px solid #6c63ff', borderRadius: '8px', color: '#6c63ff', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 },
   logoutBtn:   { padding: '8px 18px', background: 'transparent', border: '1px solid #2a2d3a', borderRadius: '8px', color: '#e8eaf0', cursor: 'pointer', fontSize: '0.85rem' },
-  main:        { padding: '24px 32px' },
+  main:        { padding: '24px 32px', background: 'var(--bg)', minHeight: 'calc(100vh - 80px)' },
   status:      { color: '#7b7f96', textAlign: 'center', padding: '60px 0' },
   filterBar:   { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' },
   filterLabel: { color: '#7b7f96', fontSize: '0.85rem' },

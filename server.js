@@ -492,3 +492,89 @@ app.post('/api/ml/:model', authMiddleware, (req, res) => {
   proxyReq.write(postData);
   proxyReq.end();
 });
+
+// ── KPI Definitions API ────────────────────────────────────────────────────
+app.get('/api/kpis', authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM kpi_definitions WHERE business_id = $1 ORDER BY created_at',
+      [req.user.business_id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Gabim gjatë marrjes së KPI-ve.' });
+  }
+});
+
+app.post('/api/kpis', authMiddleware, adminOnly, async (req, res) => {
+  const { name, description, formula } = req.body;
+  if (!name) return res.status(400).json({ error: 'Emri është i detyrueshëm.' });
+  try {
+    const result = await pool.query(
+      'INSERT INTO kpi_definitions (business_id, name, description, formula) VALUES ($1, $2, $3, $4) RETURNING *',
+      [req.user.business_id, name, description, formula]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Gabim gjatë shtimit.' });
+  }
+});
+
+app.delete('/api/kpis/:id', authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM kpi_definitions WHERE kpi_id = $1 AND business_id = $2 RETURNING kpi_id',
+      [req.params.id, req.user.business_id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'KPI nuk u gjet.' });
+    res.json({ message: 'KPI u fshi.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Gabim gjatë fshirjes.' });
+  }
+});
+
+// ── Model Runs History API ─────────────────────────────────────────────────
+app.get('/api/model-runs', authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT mr.run_id, mr.status, mr.run_date,
+             k.name AS kpi_name,
+             COUNT(f.forecast_id) AS forecast_count
+      FROM model_runs mr
+      JOIN kpi_definitions k ON mr.kpi_id = k.kpi_id
+      LEFT JOIN forecasts f ON f.run_id = mr.run_id
+      WHERE mr.business_id = $1
+      GROUP BY mr.run_id, mr.status, mr.run_date, k.name
+      ORDER BY mr.run_date DESC
+      LIMIT 20
+    `, [req.user.business_id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Gabim gjatë marrjes së historikut.' });
+  }
+});
+
+// ── Change Password API ────────────────────────────────────────────────────
+app.put('/api/change-password', authMiddleware, async (req, res) => {
+  const { current_password, new_password } = req.body;
+  if (!current_password || !new_password)
+    return res.status(400).json({ error: 'Të dyja fushat janë të detyrueshme.' });
+  if (new_password.length < 6)
+    return res.status(400).json({ error: 'Fjalëkalimi i ri duhet të ketë së paku 6 karaktere.' });
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [req.user.user_id]);
+    const user = result.rows[0];
+    let valid = false;
+    if (user.password_hash.startsWith('$2')) {
+      valid = await bcrypt.compare(current_password, user.password_hash);
+    } else {
+      valid = current_password === user.password_hash;
+    }
+    if (!valid) return res.status(401).json({ error: 'Fjalëkalimi aktual është i gabuar.' });
+    const new_hash = await bcrypt.hash(new_password, 10);
+    await pool.query('UPDATE users SET password_hash = $1 WHERE user_id = $2', [new_hash, req.user.user_id]);
+    res.json({ message: 'Fjalëkalimi u ndryshua me sukses.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Gabim gjatë ndryshimit të fjalëkalimit.' });
+  }
+});

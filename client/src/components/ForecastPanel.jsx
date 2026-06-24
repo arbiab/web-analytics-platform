@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Notification from './Notification'
 import axios from 'axios'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
@@ -11,6 +12,7 @@ export default function ForecastPanel({ onForecastDone }) {
   const [model,    setModel]    = useState('prophet')
   const [periods,  setPeriods]  = useState(6)
   const [loading,  setLoading]  = useState(false)
+  const [notif,    setNotif]    = useState(null)
   const [result,   setResult]   = useState(null)
   const [error,    setError]    = useState('')
 
@@ -35,6 +37,8 @@ export default function ForecastPanel({ onForecastDone }) {
   }))
 
   return (
+    <>
+    {notif && <Notification message={notif.message} type={notif.type} onClose={() => setNotif(null)} />}
     <div style={styles.panel}>
       <p style={styles.title}>🤖 Parashiko me ML</p>
 
@@ -81,10 +85,10 @@ export default function ForecastPanel({ onForecastDone }) {
               <XAxis dataKey="date" tick={{ fill: '#7b7f96', fontSize: 11 }} />
               <YAxis tick={{ fill: '#7b7f96', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ background: '#1a1d27', border: '1px solid #2a2d3a', borderRadius: 8 }}
+                contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8 }}
                 formatter={v => [`$${v?.toLocaleString()}`, '']}
               />
-              <Legend wrapperStyle={{ color: '#7b7f96', fontSize: 12 }} />
+              <Legend wrapperStyle={{ color: 'var(--muted)', fontSize: 12 }} />
               <Line type="monotone" dataKey="value" name="Parashikim" stroke="#f59e0b" strokeWidth={2} dot={{ r: 4 }} />
               {chartData[0]?.lower !== undefined && (
                 <Line type="monotone" dataKey="lower" name="Min" stroke="#7b7f96" strokeWidth={1} strokeDasharray="3 3" dot={false} />
@@ -97,15 +101,16 @@ export default function ForecastPanel({ onForecastDone }) {
         </div>
       )}
     </div>
+    </>
   )
 }
 
 const styles = {
-  panel:      { background: '#1a1d27', border: '1px solid #2a2d3a', borderRadius: '12px', padding: '24px' },
+  panel:      { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px' },
   title:      { fontWeight: 600, fontSize: '1rem', margin: '0 0 20px' },
   controls:   { display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: '16px' },
   field:      { display: 'flex', flexDirection: 'column', gap: '6px' },
-  label:      { color: '#7b7f96', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' },
+  label:      { color: 'var(--muted)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' },
   modelBtns:  { display: 'flex', gap: '8px' },
   modelBtn:   (active) => ({
     padding: '8px 18px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.88rem', fontWeight: active ? 600 : 400,
@@ -113,7 +118,7 @@ const styles = {
     border: `1px solid ${active ? '#6c63ff' : '#2a2d3a'}`,
     color: active ? '#fff' : '#7b7f96',
   }),
-  select:     { padding: '8px 12px', background: '#0f1117', border: '1px solid #2a2d3a', borderRadius: '8px', color: '#e8eaf0', fontSize: '0.9rem', outline: 'none' },
+  select:     { padding: '8px 12px', background: 'var(--input)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.9rem', outline: 'none' },
   forecastBtn:{ padding: '9px 24px', background: '#f59e0b', border: 'none', borderRadius: '8px', color: '#000', fontWeight: 700, cursor: 'pointer', fontSize: '0.95rem' },
   error:      { color: '#ff6b6b', fontSize: '0.85rem', padding: '8px 12px', background: 'rgba(255,107,107,0.08)', borderRadius: '6px' },
   results:    { marginTop: '16px' },
