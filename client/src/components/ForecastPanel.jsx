@@ -75,9 +75,29 @@ export default function ForecastPanel({ onForecastDone }) {
       {/* Rezultatet */}
       {result && (
         <div style={styles.results}>
-          <p style={styles.successMsg}>
+                    <p style={styles.successMsg}>
             ✅ {result.model} — {result.forecasts.length} muaj parashikime u ruajtën!
           </p>
+
+          {/* Metrakat e Modelit */}
+          {result.metrics && (
+            <div style={styles.metricsBox}>
+              <div style={styles.metricItem}>
+                <span style={styles.metricLabel}>MAE</span>
+                <span style={styles.metricValue}>${Math.round(result.metrics.MAE).toLocaleString()}</span>
+              </div>
+              <div style={styles.metricItem}>
+                <span style={styles.metricLabel}>RMSE</span>
+                <span style={styles.metricValue}>${Math.round(result.metrics.RMSE).toLocaleString()}</span>
+              </div>
+              <div style={styles.metricItem}>
+                <span style={styles.metricLabel}>MAPE</span>
+                <span style={styles.metricValue}>{result.metrics.MAPE.toFixed(2)}%</span>
+              </div>
+            </div>
+          )}
+
+        
 
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={chartData}>
@@ -123,4 +143,8 @@ const styles = {
   error:      { color: '#ff6b6b', fontSize: '0.85rem', padding: '8px 12px', background: 'rgba(255,107,107,0.08)', borderRadius: '6px' },
   results:    { marginTop: '16px' },
   successMsg: { color: '#00d4aa', fontSize: '0.88rem', margin: '0 0 16px' },
+    metricsBox:  { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' },
+  metricItem: { background: 'var(--input)', border: '1px solid var(--border)', borderRadius: '8px', padding: '12px', textAlign: 'center' },
+  metricLabel:{ display: 'block', color: 'var(--muted)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: '4px' },
+  metricValue:{ display: 'block', color: '#00d4aa', fontSize: '1.1rem', fontWeight: 700 },
 }

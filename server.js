@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const { connectMongo } = require('./db/mongo');
 const ActivityLog = require('./models/ActivityLog');
@@ -9,7 +10,7 @@ const bcrypt = require('bcryptjs');
 
 const app = express();
 const port = 3000;
-const JWT_SECRET = 'analytics_secret_key_2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'analytics_secret_key_2024';
 
 app.use(express.json());
 
@@ -27,7 +28,7 @@ const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
   database: 'web_analytics_platform',
-  password: '123456',
+  password: process.env.DB_PASSWORD || 'postgres',
   port: 5433,
 });
 
